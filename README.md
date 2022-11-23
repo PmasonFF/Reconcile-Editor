@@ -6,6 +6,8 @@ unreconciled .csv files as produced by Notes from Nature's reconcile.py.
 
 The editing GUI itself is patterned after the NfN Summary html template - except the reconciled result is fully editable using cut, paste, and copy keyboard commands from any field shown in the editor, direct character entry, deletion or replacement in the reconciled text block, or by simply selecting the best version of the actual transcriptions entered by the volunteers.
 
+The subjects to be edited are retrieved from Zooniverse using the panoptes client, and shown with the the editing GUI for each subject selected for review.
+
 # Installation
 It is assumed that the user will have a working reconcile.py environment.  If that environment supports a version of reconciled.py that can produce the reconciled file with explanations then the entire directory NfN reconcile.py version 0.4.8 is not required.  Simply copy the two files:
 
