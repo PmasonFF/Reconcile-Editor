@@ -184,7 +184,7 @@ parser = argparse.ArgumentParser(
 
         However it is possible to define a problem listing in the parameters that overrides
         the GUI.  This listing can be any .csv formatted file with a column "subject_id"  
-        (note "s") which holds a list of subjects to edit. It is important all the subjects
+        (note no "s") which holds a list of subjects to edit. It is important all the subjects
         listed appear in both the reconciled and unreconciled input files and still exist in 
         zooniverse.
 
