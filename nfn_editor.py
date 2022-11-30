@@ -16,7 +16,9 @@ from panoptes_client import Panoptes, Subject
 
 Panoptes.connect()
 
-VERSION = '0.1.0'
+VERSION = '0.1.2'
+# Added 'Modified' to problem types that can be selected, Remove special characters from database column names,
+# move editor page down 
 
 
 def configure(canvas_):
@@ -34,27 +36,27 @@ def toggle_colour(k_, j_):
 def confirm_selections():
     number = count_problems(selections)
     confirm = tk.Toplevel()
-    confirm.geometry('500x250+' + str(int(.4 * full_width)) + '+' + str(int(.025 * full_width)))
+    confirm.geometry('500x300+' + str(int(.4 * full_width)) + '+' + str(int(.1 * full_width)))
     confirm.configure(bg='#F5F5F5')
     confirm.attributes('-topmost', True)
     text_problems = Text(confirm, height=1, font=('arial', 12, 'bold'), bd=1, bg="#F5F5F5")
     text_problems.tag_configure("center", justify='center')
     text_problems.insert(INSERT, 'The problem selections result in ' + str(number) + ' subjects to review', "center")
     text_problems.pack(pady=20)
-    if number == 0:
-        change_btn = Button(confirm, text='Change selections', height=2, width=20,
-                            font=('arial', 10, 'bold'), bd=1, bg="#b3ffb3", relief='sunken',
-                            command=confirm.destroy)
-        change_btn.pack(pady=20)
-    else:
+    change_btn = Button(confirm, text='Change selections', height=2, width=20,
+                        font=('arial', 10, 'bold'), bd=1, bg="#b3ffb3", relief='sunken',
+                        command=confirm.destroy)
+    change_btn.pack(pady=20)
+    if number != 0:
         yes_btn = Button(confirm, text='Continue', height=2, width=20,
                          font=('arial', 10, 'bold'), bd=1, bg="#b3ffb3", relief='sunken',
                          command=lambda: [confirm.destroy(), choose.destroy()])
-        yes_btn.pack(pady=20)
+        yes_btn.pack(pady=15)
     no_btn = Button(confirm, text='Exit', height=2, width=20,
                     font=('arial', 10, 'bold'), bd=1, bg="#ff0000", relief='sunken',
                     command=lambda: [confirm.destroy(), choose.destroy(), quit()])
     no_btn.pack(pady=15)
+
 
 def read_selections():
     global selections
@@ -155,8 +157,8 @@ parser = argparse.ArgumentParser(
     fromfile_prefix_chars='@',
     description=textwrap.dedent(""" 
         This script takes as inputs the reconciled-with-explanations and the flattened 
-        unreconciled .csv files as produced by Notes from Nature's reconcile.py.
-
+        unreconciled .csv files as produced by Notes from Nature's reconcile.py. 
+        
         In lieu of the unreconciled Notes from Nature file generated using the -u parameter, this 
         script can use any flattened .csv file with columns for subject_id, classification_id,
         and user_name plus additional columns that has been reconciled using reconcile.py
@@ -182,7 +184,7 @@ parser = argparse.ArgumentParser(
 
         However it is possible to define a problem listing in the parameters that overrides
         the GUI.  This listing can be any .csv formatted file with a column "subject_id"  
-        (note no "s") which holds a list of subjects to edit. It is important all the subjects
+        (note "s") which holds a list of subjects to edit. It is important all the subjects
         listed appear in both the reconciled and unreconciled input files and still exist in 
         zooniverse.
 
@@ -251,8 +253,8 @@ parser.add_argument(
 parser.add_argument(
     '-b', '--browser',
     help=textwrap.dedent("""Specify the browser to be used to show the subjects.
-    This script supports Chrome, Edge, Safari and Firefox on recent Windows and
-     Mac operating systems. Other browsers can be used with a slight modification
+    This script supports Chrome, and Firefox for Mac or Windows, and Edge for Windows.
+    Other browsers can be used with a slight modification.
      """))
 
 args = parser.parse_args()
@@ -263,6 +265,8 @@ flattened_file = args.flattened
 browser_name = args.browser
 flattened_database = flattened_file.partition('.')[0] + '.db'
 
+translate_table = dict((ord(char), '') for char in r'!"#%\'()*./: <=>?@[\]^`{|}~')
+
 flattened_engine = create_engine('sqlite:///' + join(directory, flattened_database))
 if os.path.isfile(join(directory, flattened_database)):
     print('Found existing flattened database')
@@ -270,8 +274,9 @@ if os.path.isfile(join(directory, flattened_database)):
 else:
     chunksize = 100000
     i = 1
-    for df in pd.read_csv(join(directory, flattened_file), chunksize=chunksize, low_memory=False, iterator=True):
-        df = df.rename(columns={c: c.replace(' ', '').replace('(', '').replace(')', '') for c in df.columns})
+    for df in pd.read_csv(join(directory, flattened_file), dtype=str, na_filter=False,
+                          chunksize=chunksize, low_memory=False, iterator=True):
+        df = df.rename(columns={c: c.translate(translate_table) for c in df.columns})
         df.index += i
         df.to_sql('flattened', flattened_engine, if_exists='append')
         i = df.index[-1] + 1
@@ -286,8 +291,9 @@ if os.path.isfile(join(directory, reconciled_database)):
 else:
     chunksize = 100000
     i = 1
-    for df in pd.read_csv(join(directory, reconciled_file), chunksize=chunksize, low_memory=False, iterator=True):
-        df = df.rename(columns={c: c.replace(' ', '').replace('(', '').replace(')', '') for c in df.columns})
+    for df in pd.read_csv(join(directory, reconciled_file), dtype=str, na_filter=False,
+                          chunksize=chunksize, low_memory=False, iterator=True):
+        df = df.rename(columns={c: c.translate(translate_table) for c in df.columns})
         df.index += i
         df.to_sql('reconciled', reconciled_engine, if_exists='append')
         i = df.index[-1] + 1
@@ -320,7 +326,11 @@ for column in df_flattened.keys():
         continue
     main_header.append(column)
 
-match_snippet = {0: ['%No text%', '%No select%'], 1: ['%Only 1%', '%was 1 number%'], 2: ['%tie%'], 3: ['%ratio%']}
+match_snippet = {0: ['%No text%', '%No select%'],
+                 1: ['%Only 1%', '%was 1 number%'],
+                 2: ['%tie%'],
+                 3: ['%ratio%'],
+                 4: ['%Modified%']}
 
 # messy but cross-platform/monitor set-up  means of getting the current display width
 img = ImageGrab.grab()
@@ -340,7 +350,7 @@ if prob_list:  # use file with a list of subjects to determine subjects to edit
 
 else:  # build gui to get the selections here
     selections = []
-    match_level = ['No_match', 'One_transcript', 'Majority_ties', 'Fuzzy_match']
+    match_level = ['No_match', 'One_transcript', 'Majority_ties', 'Fuzzy_match', 'Modified']
     choose = tk.Tk()
     choose.geometry(str(int(.95 * full_width)) + 'x' + str(int(full_width / 4)) + '+'
                     + str(int(.025 * full_width)) + '+' + str(int(.025 * full_width)))
@@ -450,7 +460,7 @@ for subject in sorted(list(problems)):
     edit = tk.Tk()
     edit.focus()
     edit.geometry(str(int(.95 * full_width)) + 'x' + str(int(full_width / 3)) + '+'
-                  + str(int(.025 * full_width)) + '+' + str(int(.025 * full_width)))
+                  + str(int(.025 * full_width)) + '+' + str(int(.1 * full_width)))
     canvas_2 = Canvas(edit, borderwidth=0)
     frame_2 = Frame(canvas_2)
     vsb_2 = Scrollbar(edit, orient="vertical", command=canvas_2.yview)
@@ -464,16 +474,16 @@ for subject in sorted(list(problems)):
 
     frame_2.bind("<Configure>", lambda event, canvas_=canvas_2: configure(canvas_2))
 
-    # row 0
+    # row 0 The column headers
     for j in range(0, len(main_header)):
         Label(frame_2, text=main_header[j], wraplength=int(full_width / 12),
               font=('arial', 10, 'bold')).grid(row=0, column=j, sticky='w')
         frame_2.grid_columnconfigure(j, weight=1)
 
-    # row 1
+    # row 1 The reconciled data
     Label(frame_2, text=row1txt[0], font=('arial', 12, 'bold')).grid(row=1, sticky='nw')
     for j in range(2, len(columns) + 2):
-        if row2txt[main_header[j]].find('No text match') >= 0 or row2txt[main_header[j]].find('Only 1') >= 0:
+        if row2txt[main_header[j]].find('No ') >= 0 or row2txt[main_header[j]].find('Only 1') >= 0:
             bg = 'light pink'
         else:
             bg = 'white'
@@ -483,7 +493,7 @@ for subject in sorted(list(problems)):
         text_enter.grid_columnconfigure(j, weight=1)
         text_enter.bind('<<Modified>>', lambda event: read_ed_mod())
 
-    # row 2
+    # row 2 The explanations
     for j in range(2, len(columns) + 2):
         text_expl = Text(frame_2, wrap='word', width=20, height=3, bg="light grey")
         text_expl.insert(INSERT, row2txt[main_header[j]])
@@ -491,7 +501,7 @@ for subject in sorted(list(problems)):
         text_expl.grid(row=2, column=j, padx=1, pady=1, sticky='new')
         text_expl.grid_columnconfigure(j, weight=1)
 
-    # row 3+ for unreconciled rows
+    # row 3+ For unreconciled data
     btn = [[0 for k in range(0, len(df_flattened.index))] for j in range(0, len(main_header))]
     for k in range(0, len(df_flattened.index)):
         for j in range(1, len(main_header)):
@@ -535,3 +545,4 @@ browser.quit()
 if os.path.isfile('geckodriver.log'):
     os.remove('geckodriver.log')
 quit()
+
