@@ -40,7 +40,7 @@ If you are starting from scratch and need version 0.4.8 of reconcile.py, build a
 •	pip install -r requirements.txt
 ````
 
-There may be easier ways to build the python environment such as using an IDE like Pycharm.  Alternately simply attempt to run the script and install each package reported as missing, referring to the individual package installation instructions as needed.  It is best the code runs in a virtual environment so future changes to the packages do not lead to incompatibilities (On the other hand there are some advantages to keeping your environment up-to-date and handling the issues if any as they arise.)  
+Note this builds a slightly modified version of 0.4.8 to address an issue with the possible use of "subject_id" as a field in the subject_data column of the zooniverse data export.  There may be easier ways to build the python environment such as using an IDE like Pycharm.  Alternately simply attempt to run the script and install each package reported as missing, referring to the individual package installation instructions as needed.  It is best the code runs in a virtual environment so future changes to the packages do not lead to incompatibilities (On the other hand there are some advantages to keeping your environment up-to-date and handling the issues if any as they arise.)  
 
 
 
@@ -107,7 +107,7 @@ A typical run will look like:
 
 On the first run, the script builds or locates a SQL database that is being or will be modified in the current working directory (where the script is being run from).  Using a SQL database provides much faster search and update. Once modified it is easy to convert back to .csv format, or integrate with other data formats such as Darwin Core. 
 
-To select the problems to be corrected, a GUI is presented where the problem types for each reconciled field can be toggled on or off. Currently the problem types are limited to "No match, "One transcript", "Tie matches" (ie no clear majority), and 'Fuzzy" matches. Currently Exact unanimous and Exact or Normalized majority matches are not selectable in the GUI.
+To select the problems to be corrected, a GUI is presented where the problem types for each reconciled field can be toggled on or off. Currently the problem types are limited to "No match, "One transcript", "Tie matches" (ie no clear majority), 'Fuzzy" matches, and those previously Modified. Currently Exact unanimous and Exact or Normalized majority matches are not selectable in the GUI.
 
 However it is also possible to define a problem listing in the parameters that overrides the GUI.  This listing can be any .csv formatted file with a column "subject_id" (note no "s") which holds a list of subjects to edit. It is important all the subjects listed appear in both the reconciled and unreconciled input files and still exist in zooniverse.
 
