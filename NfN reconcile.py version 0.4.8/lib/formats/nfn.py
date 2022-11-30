@@ -1,4 +1,7 @@
-"""Convert Adler's Notes from Nature expedition CSV format."""
+"""Convert Adler's Notes from Nature expedition CSV format.
+
+Minor changes to handle the cases were a project uses subject_id as a field
+in the subject metadata or as a label in annotations -rename to user_subject_id"""
 
 # pylint: disable=invalid-name,unused-argument
 
@@ -29,10 +32,14 @@ def read(args):
     df = (extract_annotations(df, args, column_types)
           .pipe(extract_subject_data, column_types)
           .pipe(extract_metadata))
-
-    # Get the subject_id from the subject_ids list, use the first one
-    df[args.group_by] = df.subject_ids.map(
-        lambda x: int(str(x).split(';')[0]))
+    try:  # handle project used subject_id as a field in subject_data or as a label in annotations
+        column_types['user_subject_id'] = column_types['subject_id']
+        column_types['user_subject_id']['name'] = 'user_subject_id'
+        df.rename(columns={'subject_id': 'user_subject_id'}, inplace=True)
+        column_types.pop('subject_id', None)
+    except KeyError:
+        pass
+    df.rename(columns={'subject_ids': 'subject_id'}, inplace=True)  # simplified for nfn - subject_ids always exists
 
     # Remove unwanted columns
     unwanted_columns = [c for c in df.columns
@@ -45,7 +52,6 @@ def read(args):
     df = df.drop(unwanted_columns, axis=1)
     column_types = {k: v for k, v in column_types.items()
                     if k not in unwanted_columns}
-
     columns = util.sort_columns(args, df.columns, column_types)
     df = df.loc[:, ~df.columns.duplicated()]
     df = df.reindex(columns, axis='columns').fillna('')
@@ -99,6 +105,7 @@ def get_workflow_name(df):
 
 def extract_metadata(df):
     """Extract a few fields from the metadata JSON object."""
+
     def _extract_date(value):
         return parse(value).strftime('%d-%b-%Y %H:%M:%S')
 
@@ -280,3 +287,4 @@ def adjust_column_names(df, column_types):
         del column_types[old_name]
 
     return df.rename(columns=rename)
+
