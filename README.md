@@ -48,6 +48,10 @@ The script builds a Sqlite database which can then be edited by selecting variou
 # Setup and operation
 In order to show the zooniverse subject for comparison to the transcribed data, the script opens a browser (independent of any other open browser on the system). To do this it needs a compatible browser installed on the system and a compatible webdriver installed in the current working directory.  There is a utility script update_drivers.py which will obtain and install up-to-date webdrivers for the supported browser types. **This should be run once before using this script** and again if updates to your browser cause it to throw an error when attempting to open the browser. **At this time Chrome, and Firefox for Mac or Windows, and Edge for Windows are supported.**
 
+To run update_drivers.py, chose the browser to use and supply the corresponding parameter (-b firefox, -b chrome, or -b edge):
+./update_drivers.py –b <browser type>
+A successful run will fetch and install the appropraite webdriver for your browser, breifly open a new instance of it showing the Google home page and then close.  Note that any other open windows or tabs or other browsers will be unaffected.    
+
 The next step is to ensure the reconciled data as produced by reconcile.py **with explanations** and the unreconciled data are in a directory together (not usually the directory with the script).  The path to this directory, the reconciled and unreconciled file names, a identifier for the reviewer, and the browser type to use are passed as parameters to the editor script.  Once the browser drivers are set we are ready to run the editor. The first step is to define the input files using these parameters, along with the browser that will be used to show the original subject. 
 
 # Examples
