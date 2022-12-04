@@ -1,11 +1,10 @@
 ## Demo for Reconcile-Editor
 
-This directory contains various files that can be used to explore and test the reconcile-editor. NOTE these files have not yet been uploaded as of 12-03.
-
+This directory contains various files that can be used to explore and test the reconcile-editor. 
 #### Raw data export
 Here is a sample sample data export as downloaded from zooniverse:
 
-digging-up-the-oceans-past-classifications.csv  This is a pure transcription workflow using several combo tasks with multiple short transcription tasks in each. It was generated as a pre-beta test for a project digging up the oceans' past (https://www.zooniverse.org/projects/geosar/digging-up-the-oceans-past) which is part of an effort undertaken within the EMODnet Biology project and the Work Package 2 through which rescuing historical biodiversity data is one of the goals:
+digging-up-the-oceans-past-classifications_demo.csv  This is a pure transcription workflow using several combo tasks with multiple short transcription tasks in each. It was generated as a pre-beta test for a project digging up the oceans' past (https://www.zooniverse.org/projects/geosar/digging-up-the-oceans-past) which is part of an effort undertaken within the EMODnet Biology project and the Work Package 2 through which rescuing historical biodiversity data is one of the goals:
 It is used with thanks!
 - EMODnet Biology project (https://www.emodnet-biology.eu/)
 - Work Package 2 (https://www.emodnet-biology.eu/WP2_Access_to_marine_biological_data
@@ -20,18 +19,18 @@ For this data export there is a Python script that was used to flatten the expor
 
 In this case there is only some cleanup of older workflow versions, and simple column headers:
 
-- flatten_digging-up-the-oceans-past_class_sorted_raw.csv 
-- and the flattening script: Oceans_past_flatten_transcriptions_no_clean.py
+- flatten_digging-up-the-oceans-past_classifications_demo.csv 
+- and the flattening script: Oceans_past_flatten_transcriptions_demo.py
 
 #### Parameter .txt files used with reconcile.py
-The sample files were reconciled using reconcile.py using the parameter lists found in the file reconcile_parameters.txt included here.  This was done two ways, once a reconciliation of the flattened .csv file, and again a direct reconciliation of the raw export.  In both cases the --explanations parameter was set, and both the reconciled and summary files were requested. For the raw data export the unreconciled file is also required. Note for the flattened files the -f csv format requires the -c column listing for the fields and their type to be flattened.
+The sample files were reconciled using reconcile.py using the parameter lists found in the file reconcile_parameters_demo.txt included here.  This was done two ways, once a reconciliation of the flattened .csv file, and again a direct reconciliation of the raw export.  In both cases the --explanations parameter was set, and both the reconciled and summary files were requested. For the raw data export the unreconciled file is also required. Note for the flattened files the -f csv format requires the -c column listing for the fields and their type to be flattened.
 
 #### Reconciled and unreconciled files.
-This procedure produced two sets of reconciled and unreconciled data. Any one set can be used to demonstrate the editor.  The flattened file gives the cleanest output since it has simple column headers:
+This procedure produced two sets of reconciled and unreconciled data. Any one set can be used to demonstrate the editor.  These reconciled files were produced using reconcile.py version 0.4.8, more recent versions give similar results.  The flattened file gives the cleanest output since it has simple column headers:
 
 The flattened version of Oceans' past:
 - oceans-past_reconciled.csv
-- flatten_digging-up-the-oceans-past_class_sorted_raw.csv
+- flatten_digging-up-the-oceans-past_classifications_demo.csv
 - oceans-past_summary.html
 
 If you want to see what it looks like reconciled directly from the raw Oceans'export (the normal method for NfN projects)
