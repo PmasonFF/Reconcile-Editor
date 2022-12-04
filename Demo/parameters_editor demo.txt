@@ -1,0 +1,12 @@
+-fcsv -c "NHMD:select,Scientific_Name:select,Fully_visible:select,Accession:select,Belonged:text,Type_label:select,Location:text,month:select,day:select,year:select,Collector:text,Taxon_label:select,Taxon:text,Determiner:text,Sex:select,Genital_prep:select,Prep_number:text,Prepared_by:text,ZMUC_number:text"
+-r C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\reconciled_sample_label_transcription.csv --explanations
+-s C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\summary_sample_label_transcription.html
+C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\flatten_sample_label_transcription_sorted.csv
+
+
+-r C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\reconciled_sample_label_transcription_nfn.csv --explanations -s C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\summary_sample_label_transcription_nfn.html -u C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\unreconciled_sample_label_transcription_nfn.csv  C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo\sample_label_transcription_classifications.csv
+
+
+-d C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo -f unreconciled_sample_label_transcription_nfn.csv -r reconciled_sample_label_transcription_nfn.csv -u Pmason -b firefox
+
+-d C:\py_scripts\Scripts_Reconcile_3.8_64bit\editor\Demo -f flatten_sample_label_transcription_sorted.csv -r reconciled_sample_label_transcription.csv -u Pmason -b firefox
