@@ -16,9 +16,12 @@ from panoptes_client import Panoptes, Subject
 
 Panoptes.connect()
 
-VERSION = '0.1.2'
-# Added 'Modified' to problem types that can be selected, Remove special characters from database column names,
-# move editor page down 
+VERSION = '0.1.3'
+# 0.1.2 Modified' to problem types that can be selected, Remove special characters from database column names,
+#       move editor page down
+# 0.1.3 Min height for reconciled data, Added grab_set() to confirm gui, pull subject from
+#       zooniverse.org/projects/aliburchard/generic-project/talk/subjects/ + subject_id
+#
 
 
 def configure(canvas_):
@@ -36,6 +39,7 @@ def toggle_colour(k_, j_):
 def confirm_selections():
     number = count_problems(selections)
     confirm = tk.Toplevel()
+    confirm.grab_set()
     confirm.geometry('500x300+' + str(int(.4 * full_width)) + '+' + str(int(.1 * full_width)))
     confirm.configure(bg='#F5F5F5')
     confirm.attributes('-topmost', True)
@@ -147,8 +151,7 @@ def quit_flag():
 
 
 def get_image(zoo_id):
-    subject_ = Subject(zoo_id)
-    url = subject_.locations[0]['image/jpeg']
+    url = 'https://www.zooniverse.org/projects/aliburchard/generic-project/talk/subjects/' + str(zoo_id)
     return url
 
 
@@ -457,6 +460,7 @@ for subject in sorted(list(problems)):
 
     # build GUI for editor
     height = int(max_str_row1 / 20) + 1
+    min_height = max(3, height)
     edit = tk.Tk()
     edit.focus()
     edit.geometry(str(int(.95 * full_width)) + 'x' + str(int(full_width / 3)) + '+'
@@ -487,7 +491,7 @@ for subject in sorted(list(problems)):
             bg = 'light pink'
         else:
             bg = 'white'
-        text_enter = Text(frame_2, wrap='word', width=20, height=height, bg=bg)
+        text_enter = Text(frame_2, wrap='word', width=20, height=min_height, bg=bg)
         text_enter.insert(INSERT, row1txt[j])
         text_enter.grid(row=1, column=j, padx=1, pady=1, sticky='new')
         text_enter.grid_columnconfigure(j, weight=1)
